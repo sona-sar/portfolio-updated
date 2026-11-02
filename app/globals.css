@@ -1,26 +1,519 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --ink: #2d2a32;
+  --paper: #fff;
+  --rule-color: #dbe7f6;
+  --margin-color: #f4a9a9;
+  --rule: 40px;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #fff;
+  color: var(--ink);
+  font-family: var(--font-hand), "Comic Sans MS", cursive;
+  overflow: hidden;
+}
+
+.hand {
+  font-family: var(--font-hand), "Comic Sans MS", cursive;
+}
+
+::selection {
+  background: #ffe27a;
+}
+
+/* ---- Notebook ---------------------------------------------------------- */
+
+.notebook {
+  position: relative;
+  margin-top: 64px;
+  width: min(calc(100vw - 32px), calc((100dvh - 96px) * 1200 / 840));
+  height: calc(100dvh - 96px);
+}
+
+/* A couple of pages peeking out underneath */
+.notebook::before,
+.notebook::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 8px 18px 18px 8px;
+  background: #fff;
+  border: 1.5px solid #e8e3da;
+}
+.notebook::before {
+  transform: translate(10px, 10px);
+}
+.notebook::after {
+  transform: translate(5px, 5px);
+}
+
+.stack {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.sheet {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--paper);
+  border: 1.5px solid #e8e3da;
+  border-radius: 8px 18px 18px 8px;
+  box-shadow: 0 24px 50px -32px rgba(45, 42, 50, 0.35);
+}
+
+/* Flipbook page turn (see page-turn.tsx) */
+.flip-cast-clip {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: 8px 18px 18px 8px;
+}
+.flip-flap-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  visibility: hidden;
+  filter: drop-shadow(-2px 3px 7px rgba(45, 42, 50, 0.22));
+}
+/* The back of the sheet: lines, and the margin on the opposite side */
+.flip-flap {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  transform-origin: 0 0;
+  border-radius: 8px 18px 18px 8px;
+  background:
+    linear-gradient(90deg, transparent calc(100% - 80px), #f6c3c3 calc(100% - 80px) calc(100% - 78px), transparent calc(100% - 78px)),
+    repeating-linear-gradient(180deg, transparent 0 calc(var(--rule) - 1.5px), #e3ebf6 calc(var(--rule) - 1.5px) var(--rule)),
+    #fbfaf7;
+}
+.flip-band {
+  position: absolute;
+  left: 0;
+  top: -2000px;
+  width: 4000px;
+  height: 4000px;
+  transform-origin: 0 2000px;
+  margin-top: 0;
+}
+
+/* Spiral binding */
+.spiral {
+  position: absolute;
+  z-index: 5;
+  left: -14px;
+  top: 18px;
+  bottom: 18px;
+  width: 34px;
+  pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='36'%3E%3Ccircle cx='24' cy='18' r='4.5' fill='%23ece8e1'/%3E%3Cpath d='M24 18C24 9 3 8 3 17C3 23 9 25 13 23' fill='none' stroke='%23807a86' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E")
+    center / 34px 36px;
+  /* Only whole spirals: any leftover height is spread between them instead of cutting one off */
+  background-repeat: no-repeat space;
+}
+
+/* Divider tabs poking out of the top */
+.tabs {
+  position: absolute;
+  bottom: calc(100% - 14px);
+  right: 28px;
+  display: flex;
+  gap: 6px;
+}
+.tab {
+  display: block;
+  padding: 0 0 8px;
+  font-size: 19px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.tab-face {
+  display: block;
+  padding: 6px 16px 12px;
+  border-radius: 14px 14px 0 0;
+  transform: translateY(8px);
+  transition: transform 0.2s ease;
+}
+.tab:hover .tab-face {
+  transform: translateY(3px);
+}
+.tab[data-active="true"] .tab-face {
+  transform: translateY(0);
+}
+
+/* ---- World ------------------------------------------------------------- */
+
+.doodle {
+  cursor: pointer;
+  outline: none;
+}
+.doodle .art {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transition: transform 0.25s ease;
+}
+.doodle:hover .art,
+.doodle:focus-visible .art {
+  transform: rotate(-4deg) scale(1.04);
+}
+
+.pop {
+  animation: pop 0.25s cubic-bezier(0.3, 1.6, 0.6, 1) both;
+}
+@keyframes pop {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+}
+
+.only-touch,
+.only-touch-flex {
+  display: none;
+}
+@media (pointer: coarse) {
+  .only-mouse {
+    display: none;
+  }
+  .only-touch {
+    display: inline;
+  }
+  .only-touch-flex {
+    display: flex;
+  }
+}
+
+.pad {
+  display: grid;
+  place-items: center;
+  min-width: 54px;
+  height: 54px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 2.5px solid var(--ink);
+  background: #fff;
+  font-size: 24px;
+  color: var(--ink);
+  box-shadow: 0 3px 0 var(--ink);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.pad:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--ink);
+}
+.pad-open {
+  background: #ffe27a;
+  font-size: 20px;
+}
+
+/* ---- Pages (written on the lines) ------------------------------------- */
+
+.page {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  padding: calc(var(--rule) + 7px) 32px calc(var(--rule) * 2) 96px;
+  background:
+    linear-gradient(90deg, transparent 78px, var(--margin-color) 78px 80px, transparent 80px),
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 calc(var(--rule) - 1.5px),
+      var(--rule-color) calc(var(--rule) - 1.5px) var(--rule)
+    );
+  background-attachment: local;
+  font-size: 24px;
+  line-height: var(--rule);
+  color: var(--ink);
+}
+.page > * {
+  max-width: 680px;
+  margin: 0;
+}
+
+.page-back {
+  display: block;
+  margin-bottom: var(--rule);
+  font-size: 20px;
+  color: #8a8590;
+  cursor: pointer;
+}
+.page-back:hover {
+  color: var(--ink);
+}
+
+.page-doodle {
+  position: absolute;
+  top: calc(var(--rule) * 1.2);
+  right: 5%;
+  width: 150px;
+  height: 150px;
+}
+
+.page-kicker {
+  font-size: 20px;
+  color: #ff7a59;
+}
+.page-title {
+  font-size: calc(var(--rule) * 1.15);
+  line-height: calc(var(--rule) * 1.5);
+  padding-top: calc(var(--rule) * 0.5);
+  padding-right: 150px;
+}
+.page-sub {
+  font-size: 26px;
+}
+.page-dates {
+  color: #8a8590;
+  margin-bottom: var(--rule) !important;
+}
+.page-points li {
+  position: relative;
+  padding-left: 28px;
+}
+.page-points li::before {
+  content: "✶";
+  position: absolute;
+  left: 0;
+  color: #ffb000;
+}
+.page-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 18px;
+  margin-top: var(--rule) !important;
+  color: #4b7fd1;
+}
+.page-tags span::before {
+  content: "#";
+}
+/* One continuous drawn wave under the whole link (a native wavy underline breaks at the arrow) */
+.page-links a {
+  display: block;
+  width: fit-content;
+  height: var(--rule);
+  font-size: 28px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='7'%3E%3Cpath d='M0 3.5Q3.5 0 7 3.5T14 3.5' fill='none' stroke='%23ffe27a' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E")
+    repeat-x 0 calc(100% - 3px) / 14px 7px;
+}
+/* Screenshots taped onto the page */
+.page > .photos {
+  max-width: 1000px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+  gap: 44px 30px;
+  margin-top: var(--rule);
+  padding: 22px 18px calc(var(--rule) + 30px);
+}
+/* Beside the text: in the empty space on the right, under the corner doodle */
+.page > .photos-beside {
+  position: absolute;
+  top: calc(var(--rule) * 5.5);
+  right: calc(5% + 50px);
+  width: 250px;
+  margin: 0;
+  padding: 0;
+  grid-template-columns: 1fr;
+}
+
+.photo {
+  position: relative;
+  max-width: 320px;
+  margin: 0;
+  padding: 7px;
+  background: #fff;
+  box-shadow:
+    0 1px 2px rgba(45, 42, 50, 0.12),
+    0 10px 22px -12px rgba(45, 42, 50, 0.35);
+  transform: translate(var(--dx), var(--dy)) rotate(var(--tilt));
+  transition: transform 0.25s ease;
+}
+.photo:hover {
+  transform: translate(var(--dx), var(--dy)) rotate(0deg) scale(1.03);
+}
+.photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* Yellow tape across a corner: see-through, with ragged torn ends */
+/* One strip centered on the photo's top edge, half on the photo and half on the paper. */
+.tape {
+  --h: 22px;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: var(--len);
+  height: var(--h);
+  margin: calc(var(--h) / -2) calc(var(--len) / -2);
+  background: rgba(255, 238, 150, 0.6);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+  transform: translateX(var(--shift)) rotate(var(--jitter));
+}
+.tape-torn-1 {
+  clip-path: polygon(
+    0 8%, 6% 0, 12% 10%, 18% 2%, 82% 3%, 88% 0, 94% 9%, 100% 3%,
+    97% 30%, 100% 52%, 96% 74%, 100% 97%, 92% 100%, 86% 92%, 79% 100%,
+    20% 98%, 13% 91%, 7% 100%, 0 95%, 4% 72%, 0 50%, 3% 28%
+  );
+}
+.tape-torn-2 {
+  clip-path: polygon(
+    3% 0, 9% 6%, 15% 0, 86% 0, 91% 7%, 97% 1%,
+    100% 22%, 95% 41%, 100% 63%, 96% 85%, 98% 100%,
+    90% 94%, 84% 100%, 11% 100%, 5% 93%, 0 100%,
+    4% 78%, 0 58%, 5% 38%, 0 17%
+  );
+}
+
+/* Education: one school per block, a blank line between them */
+.page > .school + .school {
+  margin-top: var(--rule);
+}
+
+/* A blank line between bullet points (or tags) and the links under them */
+.page-points + .page-links,
+.page-tags + .page-links {
+  margin-top: var(--rule) !important;
+}
+.page-links a:hover {
+  color: #ff7a59;
+}
+
+/* Contents, laid out like the resume. Every row is exactly one ruled line tall
+   (wrapped text gets one line per row), so the writing always sits on the lines. */
+.toc-head,
+.toc-row,
+.toc-row *,
+.toc-wrap {
+  line-height: var(--rule);
+}
+.toc section + section {
+  margin-top: var(--rule);
+}
+.toc-head {
+  height: var(--rule);
+  font-size: 20px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ff7a59;
+}
+.toc-row {
+  display: flex;
+  width: 100%;
+  height: var(--rule);
+  align-items: baseline;
+  gap: 10px;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.toc-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.toc-row:hover .toc-name,
+.toc-wrap:hover .toc-label {
+  color: #ff7a59;
+}
+.toc-dots {
+  flex: 1;
+  min-width: 16px;
+  border-bottom: 2.5px dotted #c9c4ce;
+  transform: translateY(-6px);
+}
+.toc-meta {
+  color: #8a8590;
+  font-size: 20px;
+}
+/* The grey line under a row sits in the top half of the next ruled line, tucked under its row. */
+.toc-sub {
+  height: var(--rule);
+  line-height: calc(var(--rule) / 2);
+  font-size: 17px;
+  color: #8a8590;
+  transform: translateY(-5px);
+}
+.toc-stack {
+  color: #8a8590;
+  font-size: 20px;
+}
+.toc-wrap {
+  display: block;
+  text-align: left;
+  cursor: pointer;
+}
+/* Smaller text mixed into a line mustn't make that line taller than one rule. */
+.toc-wrap .toc-stack {
+  line-height: 1;
+}
+.page section + section {
+  margin-top: var(--rule);
+}
+
+@media (max-width: 640px) {
+  /* No room beside the text on a phone: back under it */
+  .page > .photos-beside {
+    position: static;
+    width: auto;
+    margin-top: var(--rule);
+    padding: 22px 18px calc(var(--rule) + 30px);
+  }
+  :root {
+    --rule: 34px;
+  }
+  .notebook {
+    margin-top: 56px;
+    height: calc(100dvh - 80px);
+  }
+  .page {
+    padding: calc(var(--rule) + 6px) 18px calc(var(--rule) * 2) 56px;
+    background:
+      linear-gradient(90deg, transparent 42px, var(--margin-color) 42px 44px, transparent 44px),
+      repeating-linear-gradient(
+        180deg,
+        transparent 0 calc(var(--rule) - 1.5px),
+        var(--rule-color) calc(var(--rule) - 1.5px) var(--rule)
+      );
+    background-attachment: local;
+    font-size: 20px;
+  }
+  .page-doodle {
+    width: 84px;
+    height: 84px;
+    right: 14px;
+  }
+  .page-title {
+    padding-right: 76px;
+  }
+  .page-sub {
+    font-size: 22px;
+  }
+  .tab {
+    font-size: 16px;
+  }
+  .tab-face {
+    padding: 5px 11px 12px;
+  }
+  .tabs {
+    right: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }
