@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { entries, groupNames, type Entry } from "./data";
-import { Arrow, Defs, Doodle, Logo } from "./doodles";
+import { Arrow, Defs, Doodle, LinkIcon, Logo } from "./doodles";
 import PageTurn from "./page-turn";
 import World from "./world";
 
@@ -197,7 +197,8 @@ function EntryPage({ entry }: { entry: Entry }) {
       {entry.links && (
         <ul className="page-links">
           {entry.links.map((l) => (
-            <li key={l.href}>
+            <li key={l.href} style={l.icon && { display: "flex", alignItems: "center", gap: 10 }}>
+              {l.icon && <LinkIcon kind={l.icon} />}
               <a href={l.href} target="_blank" rel="noreferrer">
                 {l.label} <Arrow dir="up-right" />
               </a>

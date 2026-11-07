@@ -1,4 +1,4 @@
-import type { DoodleKind, LogoKind } from "./data";
+import type { DoodleKind, LinkIconKind, LogoKind } from "./data";
 
 export const INK = "#2d2a32";
 
@@ -304,6 +304,61 @@ export function Logo({ kind, defs }: { kind: LogoKind; defs: string }) {
         <rect x={LOGO_BOX[kind][0]} y={LOGO_BOX[kind][1]} width={LOGO_BOX[kind][2]} height={LOGO_BOX[kind][3]} stroke="none" />
         {art[kind]}
       </g>
+    </svg>
+  );
+}
+
+/** Little pencil icons for links, on a 24×24 grid. Drawn steady: no wobble filter. */
+export function LinkIcon({ kind }: { kind: LinkIconKind }) {
+  const art: Record<LinkIconKind, React.ReactNode> = {
+    // A blue badge with "in"
+    linkedin: (
+      <>
+        <path d="M4 3.6Q12 3 20 3.8Q20.6 12 20.2 20.3Q12 20.8 3.8 20.2Q3.3 12 4 3.6Z" fill={CRAYONS.blue} />
+        <path d="M8 11V16.8M12 16.8V11M12 13.6Q13 11 15 11.1Q17 11.2 17 13.6V16.8" stroke="#fff" strokeWidth="2.1" />
+        <circle cx="8" cy="7.7" r="1.3" fill="#fff" stroke="none" />
+      </>
+    ),
+    // A cat face, for the octocat
+    github: (
+      <>
+        <path d="M5 9L5.6 3.6L9.6 6.4Q12 5.8 14.4 6.4L18.4 3.6L19 9Q20.6 11.2 20 14.2Q18.8 19.8 12 19.8Q5.2 19.8 4 14.2Q3.4 11.2 5 9Z" fill="#e9e6ee" />
+        <path d="M9.2 12.2V13.4M14.8 12.2V13.4" strokeWidth="2.2" />
+        <path d="M11 15.6Q12 16.6 13 15.6M2 14.6L6 14.2M2.6 17L6.2 15.6M22 14.6L18 14.2M21.4 17L17.8 15.6" strokeWidth="1.4" />
+      </>
+    ),
+    // A game controller
+    itch: (
+      <>
+        <path d="M5.4 8.4Q12 7 18.6 8.4Q22 9.2 21.6 14Q21.2 18.4 17.8 17.4L15.4 14.6H8.6L6.2 17.4Q2.8 18.4 2.4 14Q2 9.2 5.4 8.4Z" fill={CRAYONS.red} />
+        <path d="M7.4 10.6V14.2M5.6 12.4H9.2" stroke="#fff" strokeWidth="1.8" />
+        <circle cx="16" cy="11.4" r="1.1" fill="#fff" stroke="none" />
+        <circle cx="18.2" cy="13.2" r="1.1" fill="#fff" stroke="none" />
+      </>
+    ),
+    // A page with a folded corner and a highlighted line
+    resume: (
+      <>
+        <path d="M5.6 2.8H14.4L18.6 7V21.2H5.6Z" fill="#fff" />
+        <path d="M8.4 10.6H15.6" stroke={CRAYONS.yellow} strokeWidth="3.4" />
+        <path d="M14.4 2.8V7H18.6M8.6 10.6H15.4M8.6 14H15.4M8.6 17.4H12.8" strokeWidth="1.4" />
+      </>
+    ),
+  };
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width={29}
+      height={29}
+      style={{ flex: "none", marginTop: -4 }}
+      aria-hidden
+      fill="none"
+      stroke={INK}
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {art[kind]}
     </svg>
   );
 }

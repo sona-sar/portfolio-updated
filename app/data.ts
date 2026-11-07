@@ -18,6 +18,8 @@ export type DoodleKind =
   | "boxbeast"
   | "map";
 
+export type LinkIconKind = "linkedin" | "github" | "itch" | "resume";
+
 export type LogoKind = "lmu" | "gcc" | "tumo" | "usa" | "armenia";
 
 export type Group = "work" | "projects" | "school" | "more";
@@ -35,7 +37,7 @@ export type Entry = {
   dates?: string;
   points?: string[];
   tags?: string[];
-  links?: { label: string; href: string }[];
+  links?: { label: string; href: string; icon?: LinkIconKind }[];
   photos?: { src: string; alt: string; w?: number; h?: number; tilt?: number }[]; // taped onto the page; size defaults to 794×489
   photosBeside?: boolean; // photos sit in the empty space on the right instead of under the text
   schools?: { name: string; detail: string; place: string; dates: string; logo: LogoKind }[];
@@ -203,10 +205,10 @@ export const entries: Entry[] = [
       { text: "Made in Yerevan, Armenia", flag: "armenia" },
     ],
     links: [
-      { label: "LinkedIn", href: links.linkedin },
-      { label: "GitHub", href: links.github },
-      { label: "itch.io", href: links.itch },
-      { label: "Resume (PDF)", href: links.resume },
+      { label: "LinkedIn", href: links.linkedin, icon: "linkedin" },
+      { label: "GitHub", href: links.github, icon: "github" },
+      { label: "itch.io", href: links.itch, icon: "itch" },
+      { label: "Resume (PDF)", href: links.resume, icon: "resume" },
     ],
     photos: [{ src: "/sona-kid.jpg", alt: "Sona as a little kid in a red hat, sitting in a garden", w: 800, h: 800, tilt: 4 }],
     photosBeside: true,
@@ -272,6 +274,6 @@ export const entries: Entry[] = [
 export const groupNames: Record<Group, string> = {
   work: "Work",
   projects: "Projects",
-  school: "School",
+  school: "Education",
   more: "More",
 };
