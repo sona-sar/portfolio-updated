@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" stroke="#2d2a32" stroke-linecap="round" stroke-linejoin="round">
+  <defs><clipPath id="c"><path d="M16 2.4C23.6 2.2 29.8 8.2 29.6 16.2C29.4 23.8 23.4 29.8 15.6 29.6C8.2 29.4 2.2 23.4 2.4 15.8C2.6 8.4 8.6 2.6 16 2.4Z"/></clipPath></defs>
+  <path d="M16 2.4C23.6 2.2 29.8 8.2 29.6 16.2C29.4 23.8 23.4 29.8 15.6 29.6C8.2 29.4 2.2 23.4 2.4 15.8C2.6 8.4 8.6 2.6 16 2.4Z" fill="#fff" stroke="none"/>
+  <!-- Crayon fill, like the doodles: a light yellow wash with diagonal strokes -->
+  <g clip-path="url(#c)">
+    <rect width="32" height="32" fill="#ffcf33" opacity="0.2" stroke="none"/>
+    <path d="M-8 -11.6H40M-8 -7.0H40M-8 -2.4H40M-8 2.2H40M-8 6.8H40M-8 11.4H40M-8 16.0H40M-8 20.6H40M-8 25.2H40M-8 29.8H40M-8 34.4H40M-8 39.0H40M-8 43.6H40" transform="rotate(-35 16 16)" stroke="#ffcf33" stroke-width="2.2" stroke-linecap="butt" opacity="0.8"/>
+  </g>
+  <path d="M16 2.4C23.6 2.2 29.8 8.2 29.6 16.2C29.4 23.8 23.4 29.8 15.6 29.6C8.2 29.4 2.2 23.4 2.4 15.8C2.6 8.4 8.6 2.6 16 2.4Z" stroke-width="1.6"/>
+  <path d="M20.4 10.6C19.4 8.6 16.6 8 14.6 9C12.2 10.2 12.4 13.2 14.8 14.2L17.6 15.4C20.2 16.6 20.2 20 17.8 21.6C15.6 23 12.6 22.2 11.4 20.2" stroke-width="2.4"/>
+</svg>

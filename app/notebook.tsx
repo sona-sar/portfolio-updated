@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { entries, groupNames, type Entry } from "./data";
 import { Arrow, Defs, Doodle, LinkIcon, Logo } from "./doodles";
@@ -325,6 +326,11 @@ export default function Notebook() {
             </span>
           </button>
         ))}
+        <Link href="/blog" className="tab">
+          <span className="tab-face" style={{ background: "#c8f0c8" }}>
+            blog
+          </span>
+        </Link>
       </nav>
 
       <div className="stack">
